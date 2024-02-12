@@ -19,9 +19,10 @@ if (!(Test-Path $cniBinDir)) {
 
 # start containerd
 # Start-Process -FilePath .\bin\containerd.exe -NoNewWindow -PassThru # -ArgumentList ""
-Start-Process -FilePath .\bin\containerd.exe -PassThru -ArgumentList "--log-level debug --service-name containerd --log-file C:/Windows/Temp/containerd.log"
+# uncomment this if taking Option 2 (from README)
+# Start-Process -FilePath .\bin\containerd.exe -PassThru -ArgumentList "--log-level debug --service-name containerd --log-file C:/Windows/Temp/containerd.log"
 
 # start buildkit
 #Start-Process -FilePath .\bin\buildkitd.exe -NoNewWindow
-& .\bin\buildkitd.exe --debug --containerd-worker=true # --containerd-cni-config-path=$cniConfPath --containerd-cni-binary-dir=$cniBinDir --service-name buildkitd
+& .\bin\buildkitd.exe --debug --containerd-worker=true # --containerd-cni-config-path=$cniConfPath --containerd-cni-binary-dir=$cniBinDir buildkitd
 # Start-Process -FilePath .\bin\buildkitd.exe -ArgumentList "--debug --containerd-worker=true --containerd-cni-config-path=$cniConfPath --containerd-cni-binary-dir=$cniBinDir --service-name buildkitd"
