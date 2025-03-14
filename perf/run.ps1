@@ -1,3 +1,14 @@
+param(
+    [Parameter(Position = 0)]
+    [string]$TestDir,
+
+    [Parameter(Mandatory = $false)]
+    [string]$Path,
+
+    [Parameter(Mandatory = $false)]
+    [string]$DockerfilesDir
+)
+
 # pull the base images from registry to
 # avoid skew of the first pull time.
 # however, buildkit has a better pull time.
@@ -9,14 +20,12 @@ docker pull $baseImageSC
 ctr image pull $baseImageNS
 ctr image pull $baseImageSC
 
-$dockerfiles = Get-ChildItem .\dockerfiles
-
 $dockerBuild = "docker build -t perftest-docker-{0} {1}"
 $buildctlBuild = "buildctl build --frontend dockerfile.v0 --local context={1} --local dockerfile={1} --output type=image,name=docker.io/profnandaa/perftest-bk-{0},push=false"
 
 $results = @()
 
-foreach ($dir in $dockerfiles) {
+function Run($dir) {
     Write-Host "Running Test Case: $($dir.Name)"
     $dockerfileHash = Get-FileHash -Algorithm SHA256 "$($dir.FullName)\Dockerfile"
     $timeDockerNoCache = Measure-Command {  Invoke-Expression "$($dockerBuild -f $dir.Name, $dir.FullName) --no-cache" }
@@ -26,7 +35,7 @@ foreach ($dir in $dockerfiles) {
     $timeBuildkitCached = Measure-Command { Invoke-Expression ($buildctlBuild -f $dir.Name, $dir.FullName) }
 
     # store results
-    $results += [PSCustomObject]@{
+    return [PSCustomObject]@{
         TestCase = $dir.Name
         Hash = $dockerfileHash.Hash.ToLower().Substring(0,8)
         DockerNoCache = [int]([Math]::Round($timeDockerNoCache.TotalMilliseconds))
@@ -34,6 +43,22 @@ foreach ($dir in $dockerfiles) {
         BuildkitNoCache = [int]([Math]::Round($timeBuildkitNoCache.TotalMilliseconds))
         BuildkitCached = [int]([Math]::Round($timeBuildkitCached.TotalMilliseconds))
     }
+}
+
+if (-not [string]::IsNullOrEmpty($TestDir)) {
+    $dir = Get-Item -Path .\dockerfiles\$TestDir
+    $dockerfiles = @($dir)
+} elseif(-not [string]::IsNullOrEmpty($Path)) {
+    $dir = Get-Item -Path $Path
+    $dockerfiles = @($dir)
+} elseif (-not [string]::IsNullOrEmpty($DockerfilesDir)) {
+    $dockerfiles = Get-ChildItem $DockerfilesDir
+} else {
+    $dockerfiles = Get-ChildItem .\dockerfiles
+}
+
+foreach ($dir in $dockerfiles) {
+    $results += Run($dir)
 }
 
 if (-not (Test-Path -Path "./out")) {
