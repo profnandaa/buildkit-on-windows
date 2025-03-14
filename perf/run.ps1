@@ -39,8 +39,8 @@ function Run($dir) {
         TestCase = $dir.Name
         Hash = $dockerfileHash.Hash.ToLower().Substring(0,8)
         DockerNoCache = [int]([Math]::Round($timeDockerNoCache.TotalMilliseconds))
-        DockerCached = [int]([Math]::Round($timeDockerCached.TotalMilliseconds))
         BuildkitNoCache = [int]([Math]::Round($timeBuildkitNoCache.TotalMilliseconds))
+        DockerCached = [int]([Math]::Round($timeDockerCached.TotalMilliseconds))
         BuildkitCached = [int]([Math]::Round($timeBuildkitCached.TotalMilliseconds))
     }
 }

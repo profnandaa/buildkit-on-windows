@@ -20,7 +20,7 @@ ENV GIT_DOWNLOAD_URL https://github.com/git-for-windows/git/releases/download/${
 ENV GIT_DOWNLOAD_SHA256 11e8f462726827acccc7ecdad541f2544cbe5506d70fef4fa1ffac7c16288709
 
 # modifications before PATH issue is resolved - buildkit#5445
-ENV PATH "C:\git\cmd;C:\git\mingw64\bin;C:\git\usr\bin;C:\Program Files\Go\bin;C:\go\bin;$PATH"
+#ENV PATH "C:\git\cmd;C:\git\mingw64\bin;C:\git\usr\bin;C:\Program Files\Go\bin;C:\go\bin;$PATH"
 
 # steps inspired by "chcolateyInstall.ps1" from "git.install" (https://chocolatey.org/packages/git.install)
 RUN Write-Host ('Downloading {0} ...' -f $env:GIT_DOWNLOAD_URL); \
