@@ -65,7 +65,7 @@ foreach ($dir in $dockerfiles) {
     if (-not $dir.Name.StartsWith("skip")) {
         $results += Run($dir)
     } else {
-        Write-Output "==> Skipping $($dir.Name)"
+        Write-Host "==> Skipping $($dir.Name)"
     }
 }
 
