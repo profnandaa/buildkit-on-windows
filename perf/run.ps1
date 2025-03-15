@@ -62,14 +62,18 @@ if (-not [string]::IsNullOrEmpty($TestDir)) {
 }
 
 foreach ($dir in $dockerfiles) {
-    $results += Run($dir)
+    if (-not $dir.Name.StartsWith("skip")) {
+        $results += Run($dir)
+    } else {
+        Write-Output "==> Skipping $($dir.Name)"
+    }
 }
 
 if (-not (Test-Path -Path "./out")) {
     New-Item -ItemType Directory -Path "./out" | Out-Null
 }
 
-Write-Host "Writing Results: $($dockerfiles.Length) rows"
+Write-Host "Writing Results: $($results.Count) rows"
 $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
 $results | Export-Csv -Path ".\out\build_results_$timestamp.csv"
 
