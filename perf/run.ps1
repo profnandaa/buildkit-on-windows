@@ -28,11 +28,15 @@ $results = @()
 function Run($dir) {
     Write-Host "Running Test Case: $($dir.Name)"
     $dockerfileHash = Get-FileHash -Algorithm SHA256 "$($dir.FullName)\Dockerfile"
-    $timeDockerNoCache = Measure-Command {  Invoke-Expression "$($dockerBuild -f $dir.Name, $dir.FullName) --no-cache" }
+
+    Write-Host "== Running: $($dockerBuild -f $dir.Name, $dir.FullName)"
     $timeDockerCached = Measure-Command { Invoke-Expression ($dockerBuild -f $dir.Name, $dir.FullName) }
-    
-    $timeBuildkitNoCache = Measure-Command { Invoke-Expression "$($buildctlBuild -f $dir.Name, $dir.FullName) --no-cache" }
+    Write-Host "== Running: $($dockerBuild -f $dir.Name, $dir.FullName) --no-cache"
+    $timeDockerNoCache = Measure-Command {  Invoke-Expression "$($dockerBuild -f $dir.Name, $dir.FullName) --no-cache" }
+    Write-Host "== Running: $($buildctlBuild -f $dir.Name, $dir.FullName)"
     $timeBuildkitCached = Measure-Command { Invoke-Expression ($buildctlBuild -f $dir.Name, $dir.FullName) }
+    Write-Host "== Running: $($buildctlBuild -f $dir.Name, $dir.FullName) --no-cache"
+    $timeBuildkitNoCache = Measure-Command { Invoke-Expression "$($buildctlBuild -f $dir.Name, $dir.FullName) --no-cache" }
 
     # store results
     return [PSCustomObject]@{
